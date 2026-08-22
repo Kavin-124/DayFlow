@@ -98,6 +98,17 @@ export default function LoginPage() {
           </button>
         </form>
 
+        <div 
+          onClick={() => {
+            setEmail("admin@dayflow.com");
+            setPassword("admin123");
+          }}
+          className="cursor-pointer bg-slate-50 hover:bg-slate-100 border border-slate-200/80 rounded-lg p-2.5 text-center text-xs text-slate-600 transition font-medium flex items-center justify-center gap-1"
+          title="Click to auto-fill demo credentials"
+        >
+          <span className="font-bold text-[#714B67]">Demo Admin:</span> admin@dayflow.com / admin123
+        </div>
+
         <p className="text-center text-xs text-gray-500 pt-2 border-t border-gray-100">
           New employee?{" "}
           <Link href="/register" className="font-semibold text-[#714B67] hover:underline">
