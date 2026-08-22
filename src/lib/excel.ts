@@ -11,12 +11,12 @@ export function appendEmployeeToExcel(employeeData: {
   registrationDate?: string;
 }) {
   try {
-    const dirPath = path.join(process.cwd(), "emp_details");
+    const dirPath = path.resolve(process.cwd(), "emp_details");
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
     }
 
-    const filePath = path.join(dirPath, "employee_records.xlsx");
+    const filePath = path.resolve(dirPath, "employee_records.xlsx");
     let workbook: XLSX.WorkBook;
     let existingData: any[] = [];
 
@@ -30,19 +30,29 @@ export function appendEmployeeToExcel(employeeData: {
     };
 
     if (fs.existsSync(filePath)) {
-      workbook = XLSX.readFile(filePath);
-      const sheetName = workbook.SheetNames[0] || "Employees";
-      const worksheet = workbook.Sheets[sheetName];
-      existingData = XLSX.utils.sheet_to_json(worksheet);
-      existingData.push(newRecord);
-    } else {
-      workbook = XLSX.utils.book_new();
-      existingData = [newRecord];
+      try {
+        workbook = XLSX.readFile(filePath);
+        const sheetName = workbook.SheetNames[0] || "Employees";
+        const worksheet = workbook.Sheets[sheetName];
+        if (worksheet) {
+          existingData = XLSX.utils.sheet_to_json(worksheet);
+        }
+      } catch (e) {
+        existingData = [];
+      }
     }
 
+    const isDuplicate = existingData.some(
+      (row) => row["Employee ID"] === employeeData.employeeId || row["Work Email"] === employeeData.email
+    );
+
+    if (!isDuplicate) {
+      existingData.push(newRecord);
+    }
+
+    workbook = XLSX.utils.book_new();
     const newWorksheet = XLSX.utils.json_to_sheet(existingData);
 
-    // Set column widths
     newWorksheet["!cols"] = [
       { wch: 15 },
       { wch: 18 },
@@ -52,15 +62,18 @@ export function appendEmployeeToExcel(employeeData: {
       { wch: 18 },
     ];
 
-    if (workbook.SheetNames.length === 0) {
-      XLSX.utils.book_append_sheet(workbook, newWorksheet, "Employees");
-    } else {
-      workbook.Sheets[workbook.SheetNames[0]] = newWorksheet;
-    }
+    XLSX.utils.book_append_sheet(workbook, newWorksheet, "Employees");
 
-    XLSX.writeFile(workbook, filePath);
-    console.log(`✅ Excel updated: ${filePath}`);
+    try {
+      XLSX.writeFile(workbook, filePath);
+      console.log(`✅ Real-time Excel record updated at: ${filePath}`);
+    } catch (writeErr) {
+      // Fallback if main file is open/locked in MS Excel
+      const fallbackPath = path.resolve(dirPath, `employee_records_latest.xlsx`);
+      XLSX.writeFile(workbook, fallbackPath);
+      console.log(`⚠️ Main file locked by Excel. Saved update to: ${fallbackPath}`);
+    }
   } catch (error: any) {
-    console.error("Error writing employee to Excel:", error.message);
+    console.error("Error updating employee Excel file:", error.message);
   }
 }

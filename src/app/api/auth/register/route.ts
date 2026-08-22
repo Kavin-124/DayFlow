@@ -35,14 +35,18 @@ export async function POST(request: Request) {
       },
     });
 
-    // Auto append new employee details to Excel spreadsheet in D:\Antigravity\ODOO 2k26\emp_details
-    appendEmployeeToExcel({
-      employeeId: user.employeeId,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      role: user.role,
-    });
+    // Auto append new employee details to Excel spreadsheet safely
+    try {
+      appendEmployeeToExcel({
+        employeeId: user.employeeId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+      });
+    } catch (e: any) {
+      console.error("Non-critical Excel export error:", e.message);
+    }
 
     const token = await signToken({
       userId: user.id,
