@@ -1,9 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 import path from "path";
+import fs from "fs";
 
-// Normalize Windows/Linux path for SQLite file URI
-const dbPath = path.join(process.cwd(), "prisma", "dev.db").replace(/\\/g, "/");
-const sqliteUrl = process.env.DATABASE_URL || `file:${dbPath}`;
+// Locate dev.db path dynamically for local dev vs Vercel Serverless Function
+let dbPath = path.join(process.cwd(), "prisma", "dev.db");
+if (!fs.existsSync(dbPath)) {
+  const fallbackPath = path.join(process.cwd(), "dev.db");
+  if (fs.existsSync(fallbackPath)) {
+    dbPath = fallbackPath;
+  }
+}
+
+const sqliteUrl = process.env.DATABASE_URL || `file:${dbPath.replace(/\\/g, "/")}`;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
