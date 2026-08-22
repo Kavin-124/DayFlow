@@ -1,69 +1,107 @@
 # DayFlow - Enterprise Human Resource Management System (HRMS)
 
-> **Every workday, perfectly aligned.**
+<div align="center">
 
-DayFlow is a modern, enterprise-grade Human Resource Management System (HRMS) designed to digitize and streamline workforce operations, attendance tracking, leave request approvals, profile administration, and payroll management with role-based access control (RBAC).
+![Next.js 14](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=nextdotjs)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)
+![Prisma ORM](https://img.shields.io/badge/Prisma-5.22-2D3748?style=for-the-badge&logo=prisma)
+![Vercel Deployed](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel)
+
+**Every workday, perfectly aligned.**
+
+[Live Demo](https://dayflow.vercel.app) • [GitHub Repository](https://github.com/Kavin-124/DayFlow) • [Documentation](#-key-modules--features)
+
+</div>
 
 ---
 
-## 🌐 Live Application & Repository
+## 📖 Overview
 
-- 🚀 **Live Demo (Vercel)**: [https://dayflow.vercel.app](https://dayflow.vercel.app) *(Replace with your exact Vercel URL)*
+**DayFlow** is a modern, enterprise-grade Human Resource Management System (HRMS) built with Next.js 14 App Router, TypeScript, Tailwind CSS, and Prisma ORM. Designed for modern organizations, DayFlow digitizes workforce operations, real-time attendance tracking, leave request approval pipelines, profile administration, payroll calculation, and automated Excel/CSV data exports.
+
+---
+
+## 🌐 Live Application & Links
+
+- 🚀 **Live Production App (Vercel)**: [https://dayflow.vercel.app](https://dayflow.vercel.app)
 - 📦 **GitHub Repository**: [https://github.com/Kavin-124/DayFlow](https://github.com/Kavin-124/DayFlow)
+
+---
+
+## 🔑 Demo Account Credentials
+
+Use the pre-configured administrator account below for 1-click testing:
+
+| Role | Email | Password | Access Privileges |
+|---|---|---|---|
+| 👑 **Admin / HR Officer** | `admin@dayflow.com` | `admin123` | Full Administrative Privileges & Payroll Access |
+| 👤 **Employee** | *Register via `/register`* | *Custom* | Self-service Attendance, Leaves, Profile & Payslips |
+
+*(Click the **Demo Admin** banner on the Login page for instant 1-click auto-fill!)*
 
 ---
 
 ## 🌟 Key Modules & Features
 
 ### 🔐 1. Authentication & Role-Based Access Control (RBAC)
-- Dual-role authentication model: **`ADMIN` (HR Officer)** vs **`EMPLOYEE`**.
+- Dual-role security model: **`ADMIN` (HR Officer)** vs **`EMPLOYEE`**.
 - Secure JSON Web Token (JWT) stateless auth stored in HttpOnly cookies using `jose`.
 - Password encryption using `bcryptjs`.
-- Registration portal supporting Employee ID, work email, and role selection.
+- Automatic email normalization (`.trim().toLowerCase()`) ensuring seamless re-authentication.
 
 ### 👤 2. Employee Profile Management
-- Comprehensive profile views (job title, department, work email, joining date, salary structure).
-- Granular edit authorization:
-  - **Employees**: Can edit contact phone, residential address, and profile avatar.
-  - **Admins**: Full editing privileges across job titles, departments, base pay, and employee roles.
+- Comprehensive profile views (Job Title, Department, Work Email, Joining Date, Base Salary).
+- Role-scoped edit permissions:
+  - **Employees**: Update phone number, address, and profile avatar.
+  - **Admins**: Full management of employee titles, departments, base pay, and account roles.
 
 ### ⏰ 3. Attendance Tracking System
-- Real-time Check-in and Check-out widget with automated working hours counter.
+- Real-time Check-In and Check-Out widget with live working hours calculation.
 - Automated status classification: `PRESENT`, `HALF_DAY`, `ABSENT`, `LEAVE`.
-- History log supporting daily & weekly attendance views.
+- History log supporting daily & weekly attendance audit views.
 
-### 📅 4. Leave & Time-Off Management
-- Leave application workflow supporting `PAID`, `SICK`, and `UNPAID` leave types.
+### 📅 4. Leave & Time-Off Management Workflow
+- Multi-type leave request portal (`PAID`, `SICK`, `UNPAID`).
 - Real-time status pipeline: `PENDING` $\rightarrow$ `APPROVED` / `REJECTED`.
-- Admin review modal with feedback comments and immediate database reflection.
-- Automatic synchronization: Approving a leave application auto-updates the employee's attendance status for those dates to `LEAVE`.
+- Admin review modal with custom feedback comments.
+- **Auto-Sync**: Approving a leave application automatically updates the employee's attendance log for those dates to `LEAVE`.
 
 ### 💰 5. Payroll Administration
 - **Employee View**: Read-only breakdown of basic salary, allowances, deductions, and net pay in Indian Rupees (₹).
-- **Admin View**: Interactive modal to adjust basic pay, monthly allowances, and tax deductions with automatic net salary recalculation.
-- Metric indicators for total company monthly payroll expenditure.
+- **Admin View**: Interactive edit modal for basic pay, monthly allowances, and tax deductions with instant net salary recalculation.
+- Total organization monthly payroll cost metrics.
 
-### 📊 6. Executive Dashboard & Operations Overview
-- Real-time metric cards for Admins: `Total Employees`, `Present Today`, `Pending Leaves`, `Monthly Payroll Cost`.
-- Quick-access module navigation for employees.
+### 📊 6. Executive Dashboard & KPI Metrics
+- Real-time KPI cards for HR Officers: `Total Employees`, `Present Today`, `Pending Leaves`, `Monthly Payroll Cost`.
+- Employee self-service quick actions.
+
+### 📊 7. Real-Time Excel & CSV Export
+- Automatic dual-format export to `D:\Antigravity\ODOO 2k26\emp_details\`:
+  - 📄 **`employee_records.csv`**: Lock-free CSV export that updates in real-time even when Microsoft Excel is open.
+  - 📊 **`employee_records.xlsx`**: Excel workbook sheet format.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
-- **Frontend Framework**: [Next.js 14 (App Router)](https://nextjs.org/) + React 18
-- **Language**: TypeScript
-- **Styling & UI**: Tailwind CSS + Lucide React Icons
-- **Database & ORM**: SQLite + [Prisma ORM](https://www.prisma.io/)
-- **Authentication**: JWT (`jose`) + `bcryptjs`
+| Layer | Technologies |
+|---|---|
+| **Frontend Framework** | [Next.js 14 (App Router)](https://nextjs.org/) + React 18 |
+| **Language** | TypeScript |
+| **Styling & Icons** | Tailwind CSS + Lucide React Icons |
+| **Database & ORM** | SQLite + [Prisma ORM](https://www.prisma.io/) |
+| **Authentication** | JWT (`jose`) + `bcryptjs` |
+| **Data Export** | SheetJS (`xlsx`) + Native CSV Stream |
+| **Hosting & Deployment** | Vercel Serverless Platform |
 
 ---
 
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18.0.0 or higher)
-- `npm` or `yarn`
+- Node.js v18.0.0 or higher
+- npm or yarn
 
 ### 1. Clone the Repository
 ```bash
@@ -78,56 +116,47 @@ npm install
 
 ### 3. Initialize Database Schema
 ```bash
-npm run db:push
+npx prisma db push
 ```
 
-### 4. Seed Clean Initial Data (Optional)
+### 4. Seed Default Admin Account
 ```bash
 npm run db:seed
 ```
 
-### 5. Start Development Server
+### 5. Run Local Development Server
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to access the application.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🔑 Default Accounts
-
-After running database initialization, use the following default credentials to log in:
-
-| Role | Email | Password | Access Level |
-|---|---|---|---|
-| **Admin / HR Officer** | `admin@dayflow.com` | `admin123` | Full Administrative Privileges |
-
-*Note: New employees can register directly via the `/register` portal.*
-
----
-
-## 📁 Project Folder Structure
+## 📁 Directory Architecture
 
 ```
 DayFlow/
+├── emp_details/             # Real-time CSV & XLSX employee export directory
+│   ├── employee_records.csv
+│   └── employee_records.xlsx
 ├── prisma/
-│   └── schema.prisma        # Database models (User, Attendance, LeaveRequest, Payroll)
+│   ├── schema.prisma        # Database models (User, Attendance, LeaveRequest, Payroll)
+│   └── dev.db               # SQLite database
 ├── src/
-│   ├── app/                 # Next.js App Router (Pages & API routes)
-│   │   ├── api/             # REST API endpoints (Auth, Attendance, Leaves, Payroll, Users)
+│   ├── app/                 # Next.js App Router (Pages & REST API Endpoints)
+│   │   ├── api/             # API routes (Auth, Attendance, Leaves, Payroll, Users)
 │   │   ├── attendance/      # Attendance tracking view
-│   │   ├── dashboard/       # HR Operations Dashboard
+│   │   ├── dashboard/       # Operations dashboard
 │   │   ├── leaves/          # Leave management portal
 │   │   ├── payroll/         # Payroll administration
-│   │   ├── profile/         # Profile management
-│   │   └── layout.tsx       # Root app layout
-│   ├── components/          # Reusable UI & Navigation components
-│   │   ├── layout/          # Footer and Layout containers
-│   │   └── ui/              # Design system primitives (Badge, Button)
+│   │   ├── profile/         # Employee profile management
+│   │   ├── login/           # Sign-in portal
+│   │   └── register/        # Account creation portal
+│   ├── components/          # Design system UI & navigation components
 │   ├── hooks/               # Custom React hooks (useAuth)
-│   ├── lib/                 # Database client & JWT helper utilities
-│   └── types/               # TypeScript interfaces
+│   └── lib/                 # Database client, JWT helpers, and Excel exporter
+├── next.config.js           # Serverless file tracing & Next.js config
 ├── package.json
 └── README.md
 ```
@@ -136,4 +165,4 @@ DayFlow/
 
 ## 📄 License
 
-This project is open-source and available under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
