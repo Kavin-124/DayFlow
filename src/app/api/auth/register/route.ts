@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/jwt";
+import { appendEmployeeToExcel } from "@/lib/excel";
 
 export async function POST(request: Request) {
   try {
@@ -32,6 +33,15 @@ export async function POST(request: Request) {
         firstName,
         lastName,
       },
+    });
+
+    // Auto append new employee details to Excel spreadsheet in D:\Antigravity\ODOO 2k26\emp_details
+    appendEmployeeToExcel({
+      employeeId: user.employeeId,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
     });
 
     const token = await signToken({
