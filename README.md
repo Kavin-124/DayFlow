@@ -10,7 +10,7 @@
 
 **Every workday, perfectly aligned.**
 
-[Live Demo](https://dayflow.vercel.app) • [GitHub Repository](https://github.com/Kavin-124/DayFlow) • [Documentation](#-key-modules--features)
+[Live Demo App](https://dayflow.vercel.app) • [GitHub Repository](https://github.com/Kavin-124/DayFlow) • [System Architecture](#-system-architecture--workflow)
 
 </div>
 
@@ -18,20 +18,103 @@
 
 ## 📖 Overview
 
-**DayFlow** is a modern, enterprise-grade Human Resource Management System (HRMS) built with Next.js 14 App Router, TypeScript, Tailwind CSS, and Prisma ORM. Designed for modern organizations, DayFlow digitizes workforce operations, real-time attendance tracking, leave request approval pipelines, profile administration, payroll calculation, and automated Excel/CSV data exports.
+**DayFlow** is a modern, enterprise-grade Human Resource Management System (HRMS) built with Next.js 14 App Router, TypeScript, Tailwind CSS, and Prisma ORM. Designed for modern organizations, DayFlow digitizes workforce operations, real-time attendance tracking, leave request approval pipelines, profile administration, payroll calculation in Indian Rupees (₹), and automated Excel/CSV data exports.
 
 ---
 
-## 🌐 Live Application & Links
+## 🏗️ System Architecture & Workflow
 
-- 🚀 **Live Production App (Vercel)**: [https://dayflow.vercel.app](https://dayflow.vercel.app)
-- 📦 **GitHub Repository**: [https://github.com/Kavin-124/DayFlow](https://github.com/Kavin-124/DayFlow)
+```mermaid
+graph TD
+    User([👤 User / Employee / HR Officer]) -->|HTTPS Requests| UI[Next.js 14 App Router UI]
+    UI -->|JWT Auth Header / Cookie| Auth[Stateless JWT Middleware]
+    Auth -->|Validated Session| API[REST API Routes /api/*]
+    
+    subgraph Core Backend Services
+        API -->|ORM Transactions| Prisma[Prisma ORM Client]
+        API -->|Data Exporter| ExcelEngine[SheetJS + Lock-free CSV Engine]
+    end
+    
+    Prisma -->|Read / Write| SQLite[(SQLite Database dev.db)]
+    ExcelEngine -->|Real-time Export| ExcelFile[📁 emp_details/employee_records.csv & xlsx]
+    
+    subgraph Functional Business Modules
+        SQLite -->|Metric Aggregation| DashModule[Executive HR Dashboard]
+        SQLite -->|Hours Counter| AttModule[Attendance Check-In / Out]
+        SQLite -->|Approval Pipeline| LeaveModule[Leave Management Workflow]
+        SQLite -->|Salary Calc in ₹| PayModule[Payroll Administration]
+    end
+```
 
 ---
 
-## 🔑 Demo Account Credentials
+## 🖥️ Visual Interface Previews
 
-Use the pre-configured administrator account below for 1-click testing:
+### 📊 1. Executive HR Operations Dashboard
+```text
++-----------------------------------------------------------------------------------------+
+|  DayFlow  |  Dashboard  |  Profile  |  Attendance  |  Leaves  |  Payroll    [Admin] 🚪  |
++-----------------------------------------------------------------------------------------+
+|                                                                                         |
+|   👥 Total Employees    ⏰ Present Today    📅 Pending Leaves    💰 Monthly Payroll      |
+|           24                   18                  3                 ₹ 12,40,000        |
+|                                                                                         |
+|   +---------------------------------------+  +--------------------------------------+   |
+|   | ⚡ Quick HR Actions                   |  | 🕒 Attendance Live Status            |   |
+|   |  - Add Employee Account              |  |  - Present: 75%                      |   |
+|   |  - Review Pending Leave Requests      |  |  - Half Day: 10%                     |   |
+|   |  - Edit Monthly Payroll Structure    |  |  - On Leave: 15%                     |   |
+|   +---------------------------------------+  +--------------------------------------+   |
++-----------------------------------------------------------------------------------------+
+```
+
+### ⏰ 2. Real-Time Attendance Check-In / Check-Out Widget
+```text
++-------------------------------------------------------------------+
+|  Today's Shift: 22 Aug 2026                                       |
+|  Status: 🟢 checked_in (Working: 04h 25m)                        |
+|                                                                   |
+|  [ 🟢 Check In Now ]           [ 🔴 Check Out Now ]              |
+|  Log Time: 09:00 AM            Log Time: -- : --                  |
+|                                                                   |
+|  Recent Logs:                                                     |
+|  - 21 Aug 2026 | Check In: 09:02 AM | Check Out: 05:30 PM | 8.5 hrs |
+|  - 20 Aug 2026 | Check In: 09:00 AM | Check Out: 05:15 PM | 8.2 hrs |
++-------------------------------------------------------------------+
+```
+
+### 📅 3. Leave Application & Approval Pipeline
+```text
++-----------------------------------------------------------------------------------------+
+|  Employee Request: MouliTharan (EMP-003)                                                |
+|  Type: Sick Leave | Dates: 24 Aug 2026 to 25 Aug 2026 (2 Days)                          |
+|  Remarks: "Fever and doctor consultation"                                              |
+|  Status: 🟡 PENDING                                                                     |
+|                                                                                         |
+|  Admin Review: [ ✅ Approve Request ]   [ ❌ Reject Request ]                                |
+|  Comments: [ "Approved. Get well soon!"                       ]                         |
++-----------------------------------------------------------------------------------------+
+```
+
+### 💰 4. Payroll Structure Breakdown (₹ INR)
+```text
++-------------------------------------------------------------------+
+|  Employee: Kavin Kumar (EMP-006) | Department: Engineering        |
+|  Month: August 2026                                               |
+|                                                                   |
+|  💵 Basic Salary:      ₹ 50,000.00                                |
+|  ➕ HRA & Allowances:  ₹ 12,500.00                                |
+|  ➖ Tax & Deductions:  ₹  3,500.00                                |
+|  ---------------------------------------------------------------  |
+|  💰 NET SALARY:        ₹ 59,000.00 (PAID)                         |
++-------------------------------------------------------------------+
+```
+
+---
+
+## 🔑 Demo Credentials
+
+Use the pre-configured administrator account for 1-click testing:
 
 | Role | Email | Password | Access Privileges |
 |---|---|---|---|
@@ -76,9 +159,9 @@ Use the pre-configured administrator account below for 1-click testing:
 - Real-time KPI cards for HR Officers: `Total Employees`, `Present Today`, `Pending Leaves`, `Monthly Payroll Cost`.
 - Employee self-service quick actions.
 
-### 📊 7. Real-Time Excel & CSV Export
-- Automatic dual-format export to `D:\Antigravity\ODOO 2k26\emp_details\`:
-  - 📄 **`employee_records.csv`**: Lock-free CSV export that updates in real-time even when Microsoft Excel is open.
+### 📊 7. Real-Time Dual Format Data Export
+- Automatic export to `D:\Antigravity\ODOO 2k26\emp_details\`:
+  - 📄 **`employee_records.csv`**: Lock-free CSV export updating in real time even when Excel is open.
   - 📊 **`employee_records.xlsx`**: Excel workbook sheet format.
 
 ---
@@ -99,33 +182,21 @@ Use the pre-configured administrator account below for 1-click testing:
 
 ## 🚀 Quick Start Guide
 
-### Prerequisites
-- Node.js v18.0.0 or higher
-- npm or yarn
-
-### 1. Clone the Repository
 ```bash
+# 1. Clone Repository
 git clone https://github.com/Kavin-124/DayFlow.git
 cd DayFlow
-```
 
-### 2. Install Dependencies
-```bash
+# 2. Install Dependencies
 npm install
-```
 
-### 3. Initialize Database Schema
-```bash
+# 3. Initialize Database Schema
 npx prisma db push
-```
 
-### 4. Seed Default Admin Account
-```bash
+# 4. Seed Default Admin Account
 npm run db:seed
-```
 
-### 5. Run Local Development Server
-```bash
+# 5. Start Development Server
 npm run dev
 ```
 
