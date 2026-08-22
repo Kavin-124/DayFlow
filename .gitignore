@@ -1,0 +1,33 @@
+# node_modules
+node_modules/
+.pnpm-store/
+
+# Next.js build output
+.next/
+out/
+build/
+dist/
+
+# SQLite Database & Prisma generated files
+prisma/dev.db
+prisma/dev.db-journal
+dev.db
+dev.db-journal
+
+# Environment variables
+.env
+.env*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS / Editor files
+.DS_Store
+*.pem
+.vscode/
+.idea/
+refactor.js
+fix_css.js
