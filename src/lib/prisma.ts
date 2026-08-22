@@ -2,12 +2,11 @@ import { PrismaClient } from "@prisma/client";
 import path from "path";
 import fs from "fs";
 
-const isVercel = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
-
+const isVercel = process.env.VERCEL === "1";
 let dbPath = path.join(process.cwd(), "prisma", "dev.db");
 
 if (isVercel) {
-  // On Vercel Serverless Functions, copy bundled SQLite db to writable /tmp folder
+  // Copy bundled SQLite database to writable /tmp folder inside Vercel Lambda container
   const tmpDbPath = "/tmp/dev.db";
   try {
     if (!fs.existsSync(tmpDbPath) && fs.existsSync(dbPath)) {
@@ -18,10 +17,10 @@ if (isVercel) {
       fs.chmodSync(tmpDbPath, 0o666);
     }
   } catch (e) {
-    console.error("Vercel /tmp db copy error:", e);
+    console.error("Vercel /tmp copy note:", e);
   }
 } else {
-  // Local environment permission check
+  // Local development permission check
   try {
     const dbDir = path.join(process.cwd(), "prisma");
     if (fs.existsSync(dbPath)) {
