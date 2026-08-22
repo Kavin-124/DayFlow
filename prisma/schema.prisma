@@ -1,6 +1,6 @@
 datasource db {
   provider = "sqlite"
-  url      = "file:../dev.db"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -12,7 +12,7 @@ model User {
   employeeId        String   @unique
   email             String   @unique
   passwordHash      String
-  role              String   @default("EMPLOYEE") // ADMIN or EMPLOYEE
+  role              String   @default("EMPLOYEE")
   firstName         String
   lastName          String
   phone             String?  @default("")
@@ -20,7 +20,7 @@ model User {
   profilePictureUrl String?  @default("")
   jobTitle          String?  @default("Software Engineer")
   department        String?  @default("Engineering")
-  joiningDate       String?  @default("2025-01-01")
+  joiningDate       String?  @default("2026-01-01")
   baseSalary        Float    @default(50000.0)
 
   attendances       Attendance[]
@@ -35,11 +35,11 @@ model Attendance {
   id         String   @id @default(uuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date       String   // YYYY-MM-DD
+  date       String
   checkIn    DateTime?
   checkOut   DateTime?
   totalHours Float?   @default(0)
-  status     String   @default("PRESENT") // PRESENT, ABSENT, HALF_DAY, LEAVE
+  status     String   @default("PRESENT")
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -49,12 +49,12 @@ model LeaveRequest {
   id            String   @id @default(uuid())
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  leaveType     String   // PAID, SICK, UNPAID
-  startDate     String   // YYYY-MM-DD
-  endDate       String   // YYYY-MM-DD
+  leaveType     String
+  startDate     String
+  endDate       String
   totalDays     Float    @default(1.0)
   remarks       String?  @default("")
-  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  status        String   @default("PENDING")
   adminComments String?  @default("")
   reviewedBy    String?  @default("")
 
@@ -66,12 +66,12 @@ model Payroll {
   id            String   @id @default(uuid())
   userId        String
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  monthYear     String   // e.g., 2026-08
+  monthYear     String
   basicSalary   Float
   allowances    Float    @default(0)
   deductions    Float    @default(0)
   netSalary     Float
-  paymentStatus String   @default("PAID") // PAID, PENDING
+  paymentStatus String   @default("PAID")
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
