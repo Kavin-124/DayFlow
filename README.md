@@ -6,6 +6,13 @@ DayFlow is a modern, enterprise-grade Human Resource Management System (HRMS) de
 
 ---
 
+## 🌐 Live Application & Repository
+
+- 🚀 **Live Demo (Vercel)**: [https://dayflow.vercel.app](https://dayflow.vercel.app) *(Replace with your exact Vercel URL)*
+- 📦 **GitHub Repository**: [https://github.com/Kavin-124/DayFlow](https://github.com/Kavin-124/DayFlow)
+
+---
+
 ## 🌟 Key Modules & Features
 
 ### 🔐 1. Authentication & Role-Based Access Control (RBAC)
