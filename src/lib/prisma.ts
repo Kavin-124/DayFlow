@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import path from "path";
 
-// Normalize Windows backslashes to forward slashes for SQLite URI format
+// Normalize Windows/Linux path for SQLite file URI
 const dbPath = path.join(process.cwd(), "prisma", "dev.db").replace(/\\/g, "/");
-const sqliteUrl = `file:${dbPath}`;
+const sqliteUrl = process.env.DATABASE_URL || `file:${dbPath}`;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;

@@ -9,10 +9,8 @@ build/
 dist/
 
 # SQLite Database & Prisma generated files
-prisma/dev.db
-prisma/dev.db-journal
-dev.db
-dev.db-journal
+# prisma/dev.db
+# dev.db
 
 # Environment variables
 .env
