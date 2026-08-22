@@ -12,9 +12,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "All required fields must be provided" }, { status: 400 });
     }
 
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanEmployeeId = employeeId.trim();
+
     const existingUser = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { employeeId }],
+        OR: [{ email: cleanEmail }, { employeeId: cleanEmployeeId }],
       },
     });
 
@@ -26,12 +29,12 @@ export async function POST(request: Request) {
 
     const user = await prisma.user.create({
       data: {
-        employeeId,
-        email,
+        employeeId: cleanEmployeeId,
+        email: cleanEmail,
         passwordHash: hashedPassword,
         role: role || "EMPLOYEE",
-        firstName,
-        lastName,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
       },
     });
 
