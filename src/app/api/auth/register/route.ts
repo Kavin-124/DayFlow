@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/jwt";
-import { appendEmployeeToExcel } from "@/lib/excel";
+import { syncAllUsersToExcel } from "@/lib/excel";
 
 export async function POST(request: Request) {
   try {
@@ -38,15 +38,9 @@ export async function POST(request: Request) {
       },
     });
 
-    // Auto append new employee details to Excel spreadsheet safely
+    // Automatically sync ALL users from database to Excel file upon new registration
     try {
-      appendEmployeeToExcel({
-        employeeId: user.employeeId,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
-      });
+      await syncAllUsersToExcel();
     } catch (e: any) {
       console.error("Non-critical Excel export error:", e.message);
     }

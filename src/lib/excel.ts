@@ -1,59 +1,53 @@
 import * as XLSX from "xlsx";
 import path from "path";
 import fs from "fs";
+import { prisma } from "@/lib/prisma";
 
-export function appendEmployeeToExcel(employeeData: {
-  employeeId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  registrationDate?: string;
-}) {
+export async function syncAllUsersToExcel() {
   try {
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: "asc" },
+    });
+
     const dirPath = path.resolve(process.cwd(), "emp_details");
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true });
     }
 
+    // 1. Lock-free CSV Export (Guaranteed to write even if Excel is open)
+    const csvPath = path.resolve(dirPath, "employee_records.csv");
+    const csvHeader = "Employee ID,First Name,Last Name,Work Email,Role,Registration Date\n";
+    const csvLines = users
+      .map(
+        (u) =>
+          `"${u.employeeId}","${u.firstName}","${u.lastName}","${u.email}","${u.role}","${
+            u.createdAt ? u.createdAt.toISOString().split("T")[0] : new Date().toISOString().split("T")[0]
+          }"`
+      )
+      .join("\n");
+
+    try {
+      fs.writeFileSync(csvPath, csvHeader + csvLines, "utf8");
+      console.log(`✅ CSV file updated at: ${csvPath}`);
+    } catch (csvErr: any) {
+      console.error("CSV write note:", csvErr.message);
+    }
+
+    // 2. XLSX Workbook Export
     const filePath = path.resolve(dirPath, "employee_records.xlsx");
-    let workbook: XLSX.WorkBook;
-    let existingData: any[] = [];
+    const excelRows = users.map((u) => ({
+      "Employee ID": u.employeeId,
+      "First Name": u.firstName,
+      "Last Name": u.lastName,
+      "Work Email": u.email,
+      "Role": u.role,
+      "Registration Date": u.createdAt ? u.createdAt.toISOString().split("T")[0] : new Date().toISOString().split("T")[0],
+    }));
 
-    const newRecord = {
-      "Employee ID": employeeData.employeeId,
-      "First Name": employeeData.firstName,
-      "Last Name": employeeData.lastName,
-      "Work Email": employeeData.email,
-      "Role": employeeData.role,
-      "Registration Date": employeeData.registrationDate || new Date().toISOString().split("T")[0],
-    };
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(excelRows);
 
-    if (fs.existsSync(filePath)) {
-      try {
-        workbook = XLSX.readFile(filePath);
-        const sheetName = workbook.SheetNames[0] || "Employees";
-        const worksheet = workbook.Sheets[sheetName];
-        if (worksheet) {
-          existingData = XLSX.utils.sheet_to_json(worksheet);
-        }
-      } catch (e) {
-        existingData = [];
-      }
-    }
-
-    const isDuplicate = existingData.some(
-      (row) => row["Employee ID"] === employeeData.employeeId || row["Work Email"] === employeeData.email
-    );
-
-    if (!isDuplicate) {
-      existingData.push(newRecord);
-    }
-
-    workbook = XLSX.utils.book_new();
-    const newWorksheet = XLSX.utils.json_to_sheet(existingData);
-
-    newWorksheet["!cols"] = [
+    worksheet["!cols"] = [
       { wch: 15 },
       { wch: 18 },
       { wch: 18 },
@@ -62,18 +56,27 @@ export function appendEmployeeToExcel(employeeData: {
       { wch: 18 },
     ];
 
-    XLSX.utils.book_append_sheet(workbook, newWorksheet, "Employees");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Employees");
 
     try {
       XLSX.writeFile(workbook, filePath);
-      console.log(`✅ Real-time Excel record updated at: ${filePath}`);
+      console.log(`✅ XLSX file updated at: ${filePath}`);
     } catch (writeErr) {
-      // Fallback if main file is open/locked in MS Excel
       const fallbackPath = path.resolve(dirPath, `employee_records_latest.xlsx`);
-      XLSX.writeFile(workbook, fallbackPath);
-      console.log(`⚠️ Main file locked by Excel. Saved update to: ${fallbackPath}`);
+      try {
+        XLSX.writeFile(workbook, fallbackPath);
+        console.log(`⚠️ Main XLSX locked by MS Excel. Saved to: ${fallbackPath}`);
+      } catch (fallbackErr) {
+        const timePath = path.resolve(dirPath, `employee_records_${Date.now()}.xlsx`);
+        XLSX.writeFile(workbook, timePath);
+        console.log(`⚠️ Saved to timestamped file: ${timePath}`);
+      }
     }
   } catch (error: any) {
-    console.error("Error updating employee Excel file:", error.message);
+    console.error("Error syncing users to Excel file:", error.message);
   }
+}
+
+export function appendEmployeeToExcel(employeeData: any) {
+  syncAllUsersToExcel().catch((err) => console.error("Excel sync error:", err.message));
 }
