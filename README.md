@@ -10,7 +10,7 @@
 
 **Every workday, perfectly aligned.**
 
-[Live Demo App](https://dayflow.vercel.app) • [GitHub Repository](https://github.com/Kavin-124/DayFlow) • [System Architecture](#-system-architecture--workflow)
+[Live Demo App](https://day-flow-hrm.vercel.app) • [GitHub Repository](https://github.com/Kavin-124/DayFlow) • [System Architecture](#-system-architecture--workflow)
 
 </div>
 
