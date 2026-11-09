@@ -4,22 +4,24 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Seeding Dayflow HRMS database...");
+  const adminEmail = process.env.SEED_ADMIN_EMAIL || "admin@dayflow.local";
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD;
 
-  // Clear existing data
-  await prisma.payroll.deleteMany();
-  await prisma.leaveRequest.deleteMany();
-  await prisma.attendance.deleteMany();
-  await prisma.user.deleteMany();
+  if (!adminPassword || adminPassword.length < 12) {
+    throw new Error("Set SEED_ADMIN_PASSWORD to a unique password of at least 12 characters before running the seed script.");
+  }
 
-  const hashedAdminPassword = await bcrypt.hash("admin123", 10);
+  const passwordHash = await bcrypt.hash(adminPassword, 12);
 
-  // Admin User
-  await prisma.user.create({
-    data: {
+  // Upsert only the administrator account. Existing employee, attendance,
+  // leave, and payroll records are preserved.
+  await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: { passwordHash },
+    create: {
       employeeId: "EMP-001",
-      email: "admin@dayflow.com",
-      passwordHash: hashedAdminPassword,
+      email: adminEmail,
+      passwordHash,
       role: "ADMIN",
       firstName: "Admin",
       lastName: "Officer",
@@ -30,13 +32,13 @@ async function main() {
     },
   });
 
-  console.log("Database reset complete! Only 1 default Admin account exists:");
-  console.log("  Admin: admin@dayflow.com / admin123");
+  console.log(`Administrator account configured for ${adminEmail}.`);
+  console.log("The password is read from SEED_ADMIN_PASSWORD and is not printed.");
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
+  .catch((error) => {
+    console.error(error);
     process.exit(1);
   })
   .finally(async () => {
