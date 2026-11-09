@@ -112,16 +112,11 @@ graph TD
 
 ---
 
-## 🔑 Demo Credentials
+## 🔐 Administrator setup
 
-Use the pre-configured administrator account for 1-click testing:
+No default administrator password is published in this repository. Configure a unique `SEED_ADMIN_PASSWORD` (at least 12 characters) and optionally `SEED_ADMIN_EMAIL` in your local environment before running the database seed command. The seed script updates only the administrator password or creates the administrator account; it does not clear employee, attendance, leave, or payroll records.
 
-| Role | Email | Password | Access Privileges |
-|---|---|---|---|
-| 👑 **Admin / HR Officer** | `admin@dayflow.com` | `admin123` | Full Administrative Privileges & Payroll Access |
-| 👤 **Employee** | *Register via `/register`* | *Custom* | Self-service Attendance, Leaves, Profile & Payslips |
-
-*(Click the **Demo Admin** banner on the Login page for instant 1-click auto-fill!)*
+Never commit real passwords, local environment files, or database files.
 
 ---
 
